@@ -74,7 +74,7 @@ export default function SignUpForm() {
           >
             Sign Up
           </button>
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm text-gray-600 min-w-[384px]">
             <p>
               Already have an account?{" "}
               <a href="/signin" className="text-blue-600 hover:underline">Sign In</a>
