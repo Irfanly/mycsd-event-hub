@@ -1,7 +1,24 @@
 import { auth } from "@/conf/firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 export class Fireauth {
+
+    //Listen for user authentication state
+    //this supposed to run automatically when the app 
+    //detect any changes in the user authentication state
+    async checkAuthState() {
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log(user.email + " is signed in");
+            }
+            //Ensure user is signed out
+            if (!user) {
+                console.log("User is signed out");
+            }
+            //display user
+            console.log(user);
+        });
+    }
     
     //Sign Up new user
     async signUp(email, password) {
@@ -28,9 +45,8 @@ export class Fireauth {
     //Update display name
     async updateDisplayName(displayName) {
         try {
-            await auth.currentUser.updateProfile({
-                displayName: displayName
-            });
+            await updateProfile(auth.currentUser, { displayName: displayName });
+            console.log("Display name updated!");
         } catch (error) {
             throw error;
         }
@@ -67,6 +83,13 @@ export class Fireauth {
         } catch (error) {
             throw error;
         }
+    }
+
+    //get current user
+    async getCurrentUser() {
+        const user = auth.currentUser
+        console.log(user);
+        return user;
     }
 }
 

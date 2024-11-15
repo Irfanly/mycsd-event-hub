@@ -6,6 +6,7 @@ import { Card, CardHeader, CardContent, CardFooter, CardTitle } from "@/componen
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import fireauth from "@/services/fireauth";
+import firestore from "@/services/firestore";
 
 export default function AuthForm() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -19,6 +20,7 @@ export default function AuthForm() {
       if (isSignUp) {
         await fireauth.signUp(email, password);
         await fireauth.updateDisplayName(name);
+        await firestore.addUserToDatabase(fireauth.getCurrentUser());
       } else {
         await fireauth.signIn(email, password);
       }
