@@ -20,7 +20,7 @@ export default function AuthForm() {
       if (isSignUp) {
         await fireauth.signUp(email, password);
         await fireauth.updateDisplayName(name);
-        await firestore.addUserToDatabase(fireauth.getCurrentUser());
+        await firestore.addUserToDatabase();
       } else {
         await fireauth.signIn(email, password);
       }

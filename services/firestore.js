@@ -1,23 +1,49 @@
 import { db } from '@/conf/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { auth } from '@/conf/firebase';
+import { collection, setDoc, doc } from 'firebase/firestore';
+import fireauth  from '@/services/fireauth';
 
 export class Firestore {
 
+    //Import json data to the database
+    async addEventDataToDatabase() {
+        const events = require('@/data/events.json');
+        //auto generaete id for each event
+        events.forEach(async (event) => {
+            try {
+                const docRef = await addDoc(collection(db, "events"), event);
+                console.log("Document written with ID: ", docRef.id);
+            } catch (error) {
+                throw error;
+            }
+        });
+    }
+
     //Add new user to the database
-    async addUserToDatabase(data) {
-
-        const userInfo = {
-            email: data.email || "",
-            displayName: data.displayName || "",
-            photoURL: data.photoURL || "",
-            phoneNumber: data.phoneNumber || "",
-            uid: data.uid || ""
-        }
-
+    async addUserToDatabase() {
         try {
-            const docRef = await addDoc(collection(db, "users"), userInfo);
-            console.log("Document written with ID: ", docRef.id);
-        }catch (error) {
+            const user = auth.currentUser;
+            console.log(user);
+            await setDoc(doc(db, "users", user.uid), {
+                email: user.email,
+                displayName: user.displayName,
+            });
+            console.log("User added to database!");
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    //test add data to database
+    async addTestDataToDatabase() {
+        try {
+            await setDoc(doc(db, "users", "test"), {
+                email: "",
+                displayName: "test",
+            });
+            console.log("Data added to database!");
+        }
+        catch (error) {
             throw error;
         }
     }

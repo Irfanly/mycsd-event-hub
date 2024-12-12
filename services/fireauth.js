@@ -88,7 +88,7 @@ export class Fireauth {
     //get current user
     async getCurrentUser() {
         const user = auth.currentUser
-        console.log(user);
+        console.log("Current user: ", user);
         return user;
     }
 }

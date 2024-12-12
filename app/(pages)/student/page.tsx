@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Head from "next/head";
 import TopNavBar from "@/components/topNavBar";
+import SideBar from "@/components/sideBar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -39,7 +40,7 @@ const StudentPage = () => {
       <Head>
         <title>Student - My App</title>
       </Head>
-      <TopNavBar />
+      <SideBar/>
       <div className="min-h-screen bg-gray-50 pt-20">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b z-10">
