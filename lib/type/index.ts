@@ -48,9 +48,11 @@ type attendeesList = {
 };
 
 type events = {
+    eventID: string;
     title: string;
     description: string;
     eventDate: string;
+    eventTime: string;
     eventType: string;
     category: string;
     location: string;
@@ -61,6 +63,32 @@ type events = {
     budget: number;
 };
 
+export const EVENT_CATEGORIES = [
+    "Technology",
+    "Sports",
+    "Environment",
+    "Arts",
+    "Culture",
+    "Business",
+    "Health",
+    "Community",
+  ] as const;
+  
+export const EVENT_TYPES = [
+    "Workshop",
+    "Sports",
+    "Seminar",
+    "Exhibition",
+    "Social",
+    "Competition",
+    "Charity",
+    "Volunteering",
+    "Fair",
+    "Hackathon",
+    "Talk",
+    "Performance",
+  ] as const;
+
 export type { 
     users, 
     students, 
@@ -69,5 +97,5 @@ export type {
     teamMembers, 
     registeredParticipants, 
     attendeesList, 
-    events 
+    events
 };

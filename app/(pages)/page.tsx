@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { use, useState, useEffect } from 'react';
 import Head from 'next/head';
 import { 
   Calendar, 
@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import firestore from '@/services/firestore'
 
 export default function HomePage() {
   const userTypes = {
@@ -147,7 +148,6 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-
         {/* User Type Tabs */}
         <section className="container mx-auto px-4 py-12">
           <Tabs 
@@ -307,6 +307,18 @@ export default function HomePage() {
                 Sign In
               </Button>
             </div>
+          </div>
+          //Add a button for ading events
+          <div className="flex justify-center space-x-4">
+              <Button 
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-gray-100"
+                onClick={() => {
+                  firestore.importEventsData();
+                }}
+              >
+                Add Event
+              </Button>
           </div>
         </section>                   
 

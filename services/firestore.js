@@ -1,23 +1,11 @@
 import { db } from '@/conf/firebase';
 import { auth } from '@/conf/firebase';
-import { collection, setDoc, doc } from 'firebase/firestore';
+import { collection, setDoc, doc , addDoc, getDocs } from 'firebase/firestore';
 import fireauth  from '@/services/fireauth';
 
 export class Firestore {
 
     //Import json data to the database
-    async addEventDataToDatabase() {
-        const events = require('@/data/events.json');
-        //auto generaete id for each event
-        events.forEach(async (event) => {
-            try {
-                const docRef = await addDoc(collection(db, "events"), event);
-                console.log("Document written with ID: ", docRef.id);
-            } catch (error) {
-                throw error;
-            }
-        });
-    }
 
     //Add new user to the database
     async addUserToDatabase() {
@@ -92,6 +80,45 @@ export class Firestore {
         }
     }
 
+    //Import events data to the database
+    //Only run once to import data
+    async importEventsData() {
+        const events = require('@/data/events.json').events;
+        for (const key in events) {
+            if (events.hasOwnProperty(key)) {
+                const event = events[key];
+                try {
+                    const docRef = await addDoc(collection(db, "events"), event);
+                    console.log("Document written with ID: ", docRef.id);
+                }
+                catch (error) {
+                    throw error;
+                }
+            }
+        }
+        
+        console.log("Events data imported to database!");
+
+    }
+
+    //read event list 
+    async getEvents() {
+        try {
+            const events = [];
+            const querySnapshot = await getDocs(collection(db, "events"));
+            console.log(querySnapshot);
+            querySnapshot.forEach((doc) => {
+                events.push({
+                    eventID: doc.id,
+                    ...doc.data()
+                });
+            });
+            console.log(events);
+            return events;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 const firestore = new Firestore();

@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
-import TopNavBar from "@/components/topNavBar";
 import SideBar from "@/components/sideBar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,34 +12,60 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Calendar,
-  MapPin,
-  Clock,
-  Monitor,
-} from 'lucide-react';
-import { mockEvents, EVENT_CATEGORIES, EVENT_TYPES } from '@/data/mock-data';
+import { Calendar, MapPin, Clock, Monitor } from "lucide-react";
+import { events, EVENT_CATEGORIES, EVENT_TYPES} from "@/lib/type/index";
+import firestore from "@/services/firestore";
 
 const StudentPage = () => {
+  const [events, setEvents] = useState<events[]>([]); // All events
+  const [filteredEvents, setFilteredEvents] = useState<events[]>([]); // Filtered events
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Filter events based on search term and filters
-  const filteredEvents = mockEvents.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.organization.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = selectedType === "" || event.type === selectedType;
-    const matchesCategory = selectedCategory === "" || event.category === selectedCategory;
-    return matchesSearch && matchesType && matchesCategory;
-  });
+  // Fetch events from Firebase
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const eventsData = await firestore.getEvents();
+        setEvents(eventsData);
+        setFilteredEvents(eventsData); // Default to all events
+        setIsLoading(false);
+      } catch (err) {
+        setError("Failed to load events. Please try again.");
+        setIsLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
+
+  // Filter events based on search term, type, and category
+  useEffect(() => {
+    const filtered = events.filter((event) => {
+      const matchesSearch =
+        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.organization.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesType =
+        selectedType === "" || selectedType === "All" || event.eventType === selectedType;
+
+      const matchesCategory =
+        selectedCategory === "" || selectedCategory === "All" || event.category === selectedCategory;
+
+      return matchesSearch && matchesType && matchesCategory;
+    });
+
+    setFilteredEvents(filtered);
+  }, [searchTerm, selectedType, selectedCategory, events]);
 
   return (
     <>
       <Head>
         <title>Student - My App</title>
       </Head>
-      <SideBar/>
+      <SideBar />
       <div className="min-h-screen bg-gray-50 pt-20">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b z-10">
@@ -59,7 +84,7 @@ const StudentPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full"
             />
-            
+
             <div className="flex gap-4">
               <Select value={selectedType} onValueChange={setSelectedType}>
                 <SelectTrigger className="w-[180px]">
@@ -67,20 +92,27 @@ const StudentPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All">All Types</SelectItem>
-                  {EVENT_TYPES.map(type => (
-                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                  {EVENT_TYPES.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
 
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All">All Categories</SelectItem>
-                  {EVENT_CATEGORIES.map(category => (
-                    <SelectItem key={category} value={category}>{category}</SelectItem>
+                  {EVENT_CATEGORIES.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -88,59 +120,69 @@ const StudentPage = () => {
           </div>
 
           {/* Events Feed */}
-          <div className="space-y-4">
-            {filteredEvents.map((event) => (
-              <Card key={event.id} className="hover:bg-gray-50 transition-colors">
-                <CardContent className="p-6">
-                  <div className="space-y-3">
-                    {/* Organization Name */}
-                    <div className="font-semibold text-gray-600">
-                      {event.organization}
-                    </div>
-                    
-                    {/* Event Title */}
-                    <h2 className="text-xl font-bold">{event.title}</h2>
-                    
-                    {/* Event Details */}
-                    <div className="space-y-2 text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>{new Date(event.date).toLocaleDateString()}</span>
+          {isLoading ? (
+            <div className="text-center text-gray-500">Loading events...</div>
+          ) : error ? (
+            <div className="text-center text-red-500">{error}</div>
+          ) : filteredEvents.length === 0 ? (
+            <div className="text-center text-gray-500">No events found.</div>
+          ) : (
+            <div className="space-y-4">
+              {filteredEvents.map((event) => (
+                <Card key={event.eventID} className="hover:bg-gray-50 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="space-y-3">
+                      {/* Organization Name */}
+                      <div className="font-semibold text-gray-600">
+                        {event.organization}
                       </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        <span>{event.time}</span>
+
+                      {/* Event Title */}
+                      <h2 className="text-xl font-bold">{event.title}</h2>
+
+                      {/* Event Details */}
+                      <div className="space-y-2 text-gray-600">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <span>{new Date(event.eventDate).toLocaleDateString()}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          <span>{event.eventTime}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {event.eventType === "Online" ? (
+                            <Monitor className="w-4 h-4" />
+                          ) : (
+                            <MapPin className="w-4 h-4" />
+                          )}
+                          <span>{event.location}</span>
+                        </div>
                       </div>
-                      
-                      <div className="flex items-center gap-2">
-                        {event.type === 'Online' ? (
-                          <Monitor className="w-4 h-4" />
-                        ) : (
-                          <MapPin className="w-4 h-4" />
-                        )}
-                        <span>{event.location}</span>
+
+                      {/* Event Type and Category Tags */}
+                      <div className="flex gap-2 pt-2">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm ${
+                            event.eventType === "Online"
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-green-100 text-green-700"
+                          }`}
+                        >
+                          {event.eventType}
+                        </span>
+                        <span className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700">
+                          {event.category}
+                        </span>
                       </div>
                     </div>
-                    
-                    {/* Event Type and Category Tags */}
-                    <div className="flex gap-2 pt-2">
-                      <span className={`px-3 py-1 rounded-full text-sm ${
-                        event.type === 'Online' 
-                          ? 'bg-blue-100 text-blue-700' 
-                          : 'bg-green-100 text-green-700'
-                      }`}>
-                        {event.type}
-                      </span>
-                      <span className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700">
-                        {event.category}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </main>
       </div>
     </>
