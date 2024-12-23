@@ -14,14 +14,14 @@ const Sidebar = () => {
     { icon: Calendar, label: 'Campus Events', href: '/events' },
     { icon: Search, label: 'Explore', href: '/explore' },
     { icon: BookOpen, label: 'My Registrations', href: '/registrations' },
-    { icon: UserCircle, label: 'Profile', href: '/profile' },
+    { icon: UserCircle, label: 'Profile', href: '/student/profile' },
   ];
 
   return (
     <div className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 p-4 flex flex-col">
       {/* University Logo or Name */}
       <div className="mb-4 pl-3">
-        <h2 className="text-2xl font-bold text-blue-600">Campus Hub</h2>
+        <h2 className="text-2xl font-bold text-blue-600">MyCSD Event Hub</h2>
       </div>
 
       {/* Navigation Menu */}

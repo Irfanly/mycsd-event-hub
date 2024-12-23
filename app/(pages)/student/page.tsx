@@ -18,7 +18,7 @@ import firestore from "@/services/firestore";
 
 const StudentPage = () => {
   const [events, setEvents] = useState<events[]>([]); // All events
-  const [filteredEvents, setFilteredEvents] = useState<events[]>([]); // Filtered events
+  const [filteredEvents, setFilteredEvents] = useState<events[]>([]); // Filtered ents
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
