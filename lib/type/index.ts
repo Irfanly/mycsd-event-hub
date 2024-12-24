@@ -1,13 +1,17 @@
 type users = {
     name: string;
     email: string;
-    password: string;
     profilePicture: string;
     role: string;
 };
 
 type students = {
     userID: string;
+    matricNo: string;
+    matric: string;
+    programme: string;
+    year: string;
+    phone: string;
     registeredEvents: string[];
     attendedEvents: string[];
     organizationMemberships: string[];
