@@ -2,7 +2,6 @@ import { db } from '@/conf/firebase';
 import { auth } from '@/conf/firebase';
 import { collection, setDoc, doc , addDoc, getDocs } from 'firebase/firestore';
 import fireauth  from '@/services/fireauth';
-import { read } from 'fs';
 
 export class Firestore {
 
