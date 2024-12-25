@@ -8,21 +8,21 @@ export class Firestore {
     //Import json data to the database
 
     // Add new user to the database
-    async addUserToDatabase() {
+    async addUserToDatabase(role) {
         try {
             const user = auth.currentUser;
             if (!user) {
                 throw new Error("No user is currently signed in.");
             }
             console.log(user);
-            const docRef = await setDoc(doc(db, "users", user.uid), {
+            await setDoc(doc(db, "users", user.uid), {
                 name: user.displayName || "",
                 email: user.email,
                 profilePicture: user.photoURL || "",
-                role: "user" // Default role
+                role: role
             });
-            console.log("Document written with ID: ", docRef.id);
-            return docRef.id;
+            console.log("Document written with ID: ", user.uid);
+            return user.uid;
         } catch (error) {
             console.error("Error adding user to database:", error);
             throw error;
@@ -40,7 +40,6 @@ export class Firestore {
             await addDoc(collection(db, "students"), {
                 userID: userID,
                 matricNo: "", // Placeholder, should be updated with actual matric number
-                matric: "", // Placeholder, should be updated with actual matric
                 programme: "", // Placeholder, should be updated with actual programme
                 year: "", // Placeholder, should be updated with actual year
                 phone: "", // Placeholder, should be updated with actual phone number
@@ -60,13 +59,18 @@ export class Firestore {
     async addStudentOrganizationToDatabase(userID) {
         try {
             const user = auth.currentUser;
+            if (!user) {
+                throw new Error("No user is currently signed in.");
+            }
             console.log(user);
-            await setDoc(doc(db, "studentOrganizations", user.uid), {
-                email: user.email,
-                displayName: user.displayName,
+            await addDoc(collection(db, "studentOrganizations"), {
+                userID: userID,
+                descriptions: "", // Placeholder, should be updated with actual description
+                hostedEvents: [] // Initialize as empty array
             });
             console.log("Student Organization added to database!");
         } catch (error) {
+            console.error("Error adding student organization to database:", error);
             throw error;
         }
     }
@@ -85,6 +89,53 @@ export class Firestore {
             } else {
                 console.log("No such document!");
             }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    //read student database
+    async readStudentDatabase() {
+        try {
+            const user = auth.currentUser;
+            if (!user) {
+                throw new Error("No user is currently signed in.");
+            }
+            const docRef = await db.collection("students").where("userID", "==", user.uid).get();
+            if (docRef.exists()) {
+                console.log("Document data:", docRef.data());
+                return docRef.data();
+            } else {
+                console.log("No such document!");
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    //update user database
+    async updateUserDatabase(data) {
+        try {
+            const user = auth.currentUser;
+            if (!user) {
+                throw new Error("No user is currently signed in.");
+            }
+            await db.collection("users").doc(user.uid).update(data);
+            console.log("Document successfully updated!");
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    //update student database
+    async updateStudentDatabase(data) {
+        try {
+            const user = auth.currentUser;
+            if (!user) {
+                throw new Error("No user is currently signed in.");
+            }
+            await db.collection("students").where("userID", "==", user.uid).update(data);
+            console.log("Document successfully updated!");
         } catch (error) {
             throw error;
         }

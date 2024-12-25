@@ -1,14 +1,22 @@
+'use client';
+
 import React from 'react';
 import { 
   Calendar, 
   Search, 
   UserCircle, 
   BookOpen,
-  Home
+  Home,
+  LogOut
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Button } from "@/components/ui/button";
+import fireauth from '@/services/fireauth';
 
 const Sidebar = () => {
+  const router = useRouter();
+  
   const menuItems = [
     { icon: Home, label: 'Dashboard', href: '/dashboard' },
     { icon: Calendar, label: 'Campus Events', href: '/events' },
@@ -16,6 +24,12 @@ const Sidebar = () => {
     { icon: BookOpen, label: 'My Registrations', href: '/registrations' },
     { icon: UserCircle, label: 'Profile', href: '/student/profile' },
   ];
+
+  const handleLogout = () => {
+    fireauth.signOut();
+    router.push('/');
+    console.log('Logging out...');
+  };
 
   return (
     <div className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 p-4 flex flex-col">
@@ -41,7 +55,7 @@ const Sidebar = () => {
       </nav>
 
       {/* User Profile Section */}
-      <div className="mt-4 flex items-center border-t pt-4">
+      <div className="mt-4 border-t pt-4 space-y-4">
         <div className="flex items-center">
           <img 
             src="/api/placeholder/40/40" 
@@ -53,6 +67,16 @@ const Sidebar = () => {
             <div className="text-gray-500 text-xs">@student_handle</div>
           </div>
         </div>
+        
+        {/* Logout Button */}
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+          onClick={handleLogout}
+        >
+          <LogOut className="w-5 h-5 mr-4" />
+          <span className="font-medium">Logout</span>
+        </Button>
       </div>
     </div>
   );

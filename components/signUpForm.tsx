@@ -6,10 +6,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Mail } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Mail, User, Building2 } from "lucide-react";
 import Link from "next/link";
 import fireauth from "@/services/fireauth";
 import firestore from "@/services/firestore";
+import { USER_ROLES } from "@/lib/type/index";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -17,8 +19,7 @@ export default function SignUpPage() {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  //Role tak siap lagi. Tak include role assignment dalam page ni.
-  const [role, setRole] = useState("student");
+  const [role, setRole] = useState<typeof USER_ROLES[number]>("");
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,14 +29,15 @@ export default function SignUpPage() {
     try {
       await fireauth.signUp(email, password);
       await fireauth.updateDisplayName(name);
-      const docRef = await firestore.addUserToDatabase();
-      if(role === "student") {
-        await firestore.addStudentToDatabase(docRef.id);
-      } else if(role === "studentOrganization") {
-        await firestore.addStudentOrganizationToDatabase(docRef.id);
-      } 
-
-
+      const docID = await firestore.addUserToDatabase(role.toLowerCase());
+      
+      if(role === "Student") {
+        await firestore.addStudentToDatabase(docID);
+      } else if(role === "Organization") {
+        await firestore.addStudentOrganizationToDatabase(docID);
+      } else {
+        throw new Error("Invalid user role.");
+      }
       if (await fireauth.isUserLoggedIn()) {
         window.location.href = "/student";
       } else {
@@ -109,6 +111,45 @@ export default function SignUpPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Account Type</Label>
+                <RadioGroup
+                  value={role}
+                  onValueChange={(value) => setRole(value as typeof USER_ROLES[number])}
+                  className="grid grid-cols-2 gap-4 pt-2"
+                >
+                  <Label
+                    htmlFor="student"
+                    className={`flex flex-col items-center space-y-2 border rounded-lg p-4 cursor-pointer ${
+                      role === "Student" 
+                        ? "bg-blue-50 border-blue-500" 
+                        : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <RadioGroupItem value="Student" id="student" />
+                    <User className={`h-6 w-6 ${role === "Student" ? "text-blue-500" : ""}`} />
+                    <span className={role === "Student" ? "text-blue-500 font-semibold" : ""}>
+                      Student
+                    </span>
+                  </Label>
+
+                  <Label
+                    htmlFor="organization"
+                    className={`flex flex-col items-center space-y-2 border rounded-lg p-4 cursor-pointer ${
+                      role === "Organization" 
+                        ? "bg-blue-50 border-blue-500" 
+                        : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <RadioGroupItem value="Organization" id="organization" />
+                    <Building2 className={`h-6 w-6 ${role === "Organization" ? "text-blue-500" : ""}`} />
+                    <span className={role === "Organization" ? "text-blue-500 font-semibold" : ""}>
+                      Organization
+                    </span>
+                  </Label>
+                </RadioGroup>
               </div>
 
               <Button 

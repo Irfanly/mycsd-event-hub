@@ -8,7 +8,6 @@ type users = {
 type students = {
     userID: string;
     matricNo: string;
-    matric: string;
     programme: string;
     year: string;
     phone: string;
@@ -66,6 +65,8 @@ type events = {
     attendanceCode: string;
     budget: number;
 };
+
+export const USER_ROLES = ["Student", "Organization", ""] as const;
 
 export const EVENT_CATEGORIES = [
     "Technology",
