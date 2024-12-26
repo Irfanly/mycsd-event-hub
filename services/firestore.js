@@ -1,6 +1,6 @@
 import { db } from '@/conf/firebase';
 import { auth } from '@/conf/firebase';
-import { collection, setDoc, doc , addDoc, getDocs } from 'firebase/firestore';
+import { collection, setDoc, doc , addDoc, getDocs, getDoc, query, where, updateDoc } from 'firebase/firestore';
 import fireauth  from '@/services/fireauth';
 
 export class Firestore {
@@ -82,10 +82,10 @@ export class Firestore {
             if (!user) {
                 throw new Error("No user is currently signed in.");
             }
-            const docRef = await db.collection("users").doc(user.uid).get();
-            if (docRef.exists()) {
-                console.log("Document data:", docRef.data());
-                return docRef.data();
+            const docSnap = await getDoc(doc(db, "users", user.uid));
+            if (docSnap.exists()) {
+                console.log("Document data:", docSnap.data());
+                return docSnap.data();
             } else {
                 console.log("No such document!");
             }
@@ -101,10 +101,11 @@ export class Firestore {
             if (!user) {
                 throw new Error("No user is currently signed in.");
             }
-            const docRef = await db.collection("students").where("userID", "==", user.uid).get();
-            if (docRef.exists()) {
-                console.log("Document data:", docRef.data());
-                return docRef.data();
+            const querySnapshot = await getDocs(query(collection(db, "students"), where("userID", "==", user.uid)));
+            if (!querySnapshot.empty) {
+                const docSnap = querySnapshot.docs[0];
+                console.log("Document data:", docSnap.data());
+                return docSnap.data();
             } else {
                 console.log("No such document!");
             }
@@ -120,7 +121,9 @@ export class Firestore {
             if (!user) {
                 throw new Error("No user is currently signed in.");
             }
-            await db.collection("users").doc(user.uid).update(data);
+            const userRef = doc(db, "users", user.uid);
+            await updateDoc(userRef, data);
+            await fireauth.updateDisplayName(data.name);
             console.log("Document successfully updated!");
         } catch (error) {
             throw error;
@@ -134,7 +137,16 @@ export class Firestore {
             if (!user) {
                 throw new Error("No user is currently signed in.");
             }
-            await db.collection("students").where("userID", "==", user.uid).update(data);
+            const queryRef = query(collection(db, "students"), where("userID", "==", user.uid));
+            const querySnapshot = await getDocs(queryRef);
+            if (!querySnapshot.empty) {
+                const docSnap = querySnapshot.docs[0];
+                const studentRef = doc(db, "students", docSnap.id);
+                await updateDoc(studentRef, data);
+                console.log("Document successfully updated!");
+            } else {
+                console.log("No such document!");
+            }
             console.log("Document successfully updated!");
         } catch (error) {
             throw error;
