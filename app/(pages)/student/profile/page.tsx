@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Phone, School, Calendar, MapPin, Clock, User, BookOpen, Building2, PenSquare, AlertCircle } from "lucide-react";
+import { Mail, Phone, School, Calendar, MapPin, Clock, User, BookOpen, Building2, PenSquare, AlertCircle, Camera } from "lucide-react";
 import { users, students} from "@/lib/type/index";
 import firestore from "@/services/firestore";
+import firestorage from "@/services/firestorage";
 import SideBar from "@/components/sideBar";
 import EditProfileModal from "@/components/editProfileModal";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState<users>();
@@ -77,11 +80,25 @@ const UserProfile = () => {
     setIsEditModalOpen(true);
   };
 
+  const handleUpdateProfilePicture = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    console.log("File selected:", file);
+    if (file != null) {
+      try {
+        const profilePictureUrl = await firestorage.uploadProfilePicture(file, studentData?.userID);
+        await firestore.updateUserPicture(profilePictureUrl);
+        setProfileUpdated(prev => !prev);
+      } catch (error) {
+        console.error("Error updating profile picture:", error);
+      }
+    }
+  };
+
   const handleUpdateProfile = async (userUpdateData: Partial<users>, studentUpdateData: Partial<students>) => {
     try {
-      // Update your firestore database here
       await firestore.updateUserDatabase(userUpdateData);
       await firestore.updateStudentDatabase(studentUpdateData);
+      console.log("Profile updated successfully");
 
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -192,10 +209,25 @@ const UserProfile = () => {
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row gap-8 items-start">
                 <div className="flex flex-col items-center space-y-4">
-                  <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
-                    <AvatarImage src={userData?.profilePicture || "/placeholder-profile.png"} />
-                    <AvatarFallback>{userData?.name?.charAt(0) || "U"}</AvatarFallback>
-                  </Avatar>
+                  <div className="relative">
+                    <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
+                      <AvatarImage src={userData?.profilePicture} />
+                      <AvatarFallback>{userData?.name?.charAt(0) || "U"}</AvatarFallback>
+                    </Avatar>
+                    <Input
+                      id="profile-picture-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleUpdateProfilePicture}
+                    />
+                    <Label
+                      htmlFor="profile-picture-upload"
+                      className="absolute bottom-0 right-0 p-2 bg-blue-600 rounded-full cursor-pointer hover:bg-blue-700 transition-colors"
+                    >
+                      <Camera className="w-5 h-5 text-white" />
+                    </Label>
+                  </div>
                   <div className="text-center">
                     <h2 className="text-2xl font-bold text-gray-800">
                       {userData?.name || "Update Your Name"}
@@ -269,13 +301,15 @@ const UserProfile = () => {
             </TabsContent>
           </Tabs>
         </div>
-        <EditProfileModal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          userData={userData}
-          studentData={studentData}
-          onUpdateProfile={handleUpdateProfile}
-        />  
+        {userData && studentData && (
+          <EditProfileModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            userData={userData}
+            studentData={studentData}
+            onUpdateProfile={handleUpdateProfile}
+          />
+        )}
       </main>
     </div>
   );

@@ -1,27 +1,33 @@
-import { db, storage } from '@/conf/firebase';
-import { ref, uploadBytes } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '@/conf/firebase';
 
 export class Firestorage{
     //upload and update profile picture
     async uploadProfilePicture(file, userID) {
         try {
+            console.log("Uploading profile picture...");
             const pictureRef = ref(storage, `profile-pictures/${userID}`);
-            uploadBytes(pictureRef, file);
-            console.log("Profile picture uploaded! with url:", pictureRef);
-            return pictureRef;
+            uploadBytes(pictureRef, file).then((snapshot) => {
+                alert("Profile picture uploaded!");
+            });
+            //get download url
+            const downloadURL = await getDownloadURL(pictureRef);
+            console.log("Profile picture uploaded! with url:", downloadURL);
+            return downloadURL;
         } catch (error) {
             console.error("Error uploading profile picture:", error);
             throw error;
         }
     }
-
     //upload and update event picture
     async uploadEventPicture(file, eventID) {
         try {
             const pictureRef = ref(storage, `event-pictures/${eventID}`);
             uploadBytes(pictureRef, file);
-            console.log("Event picture uploaded! with url:", pictureRef);
-            return pictureRef;
+            //get download url
+            const downloadURL = await getDownloadURL(pictureRef);
+            console.log("Profile picture uploaded! with url:", downloadURL);
+            return downloadURL;
         } catch (error) {
             console.error("Error uploading event picture:", error);
             throw error;

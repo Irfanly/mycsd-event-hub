@@ -122,8 +122,30 @@ export class Firestore {
                 throw new Error("No user is currently signed in.");
             }
             const userRef = doc(db, "users", user.uid);
-            await updateDoc(userRef, data);
+            await updateDoc(userRef, {
+                name: data.name,
+                email: data.email
+
+            });
             await fireauth.updateDisplayName(data.name);
+            console.log("Document successfully updated!");
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    //update user picture
+    async updateUserPicture(data) {
+        console.log(data);
+        try {
+            const user = auth.currentUser;
+            if (!user) {
+                throw new Error("No user is currently signed in.");
+            }
+            const userRef = doc(db, "users", user.uid);
+            await updateDoc(userRef, {
+                profilePicture: data
+            });
             console.log("Document successfully updated!");
         } catch (error) {
             throw error;
@@ -142,7 +164,12 @@ export class Firestore {
             if (!querySnapshot.empty) {
                 const docSnap = querySnapshot.docs[0];
                 const studentRef = doc(db, "students", docSnap.id);
-                await updateDoc(studentRef, data);
+                await updateDoc(studentRef, {
+                    matricNo: data.matricNo,
+                    programme: data.programme,
+                    year: data.year,
+                    phone: data.phone
+                });
                 console.log("Document successfully updated!");
             } else {
                 console.log("No such document!");
