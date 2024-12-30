@@ -46,7 +46,7 @@ const StudentPage = () => {
     const filtered = events.filter((event) => {
       const matchesSearch =
         event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.organization.toLowerCase().includes(searchTerm.toLowerCase());
+        event.organizer.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesType =
         selectedType === "" || selectedType === "All" || event.eventType === selectedType;
@@ -134,7 +134,7 @@ const StudentPage = () => {
                     <div className="space-y-3">
                       {/* Organization Name */}
                       <div className="font-semibold text-gray-600">
-                        {event.organization}
+                        {event.organizer}
                       </div>
 
                       {/* Event Title */}
@@ -158,7 +158,7 @@ const StudentPage = () => {
                           ) : (
                             <MapPin className="w-4 h-4" />
                           )}
-                          <span>{event.location}</span>
+                          <span>{event.eventLocation}</span>
                         </div>
                       </div>
 
