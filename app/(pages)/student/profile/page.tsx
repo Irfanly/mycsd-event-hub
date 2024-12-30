@@ -57,8 +57,8 @@ const UserProfile = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const userResult = await firestore.readUserDatabase();
-        const studentResult = await firestore.readStudentDatabase();
+        const userResult = await firestore.readUserDatabase() as users;
+        const studentResult = await firestore.readStudentDatabase() as students;
         
         setUserData(userResult);
         setStudentData(studentResult);
@@ -108,8 +108,8 @@ const UserProfile = () => {
     setProfileUpdated(prev => !prev)
   };
 
-  const getCategoryColor = (category) => {
-    const colors = {
+  const getCategoryColor = (category: string | number) => {
+    const colors: { [key: string]: string } = {
       Technical: "bg-blue-100 text-blue-800",
       Community: "bg-green-100 text-green-800",
       Workshop: "bg-purple-100 text-purple-800",
@@ -117,7 +117,8 @@ const UserProfile = () => {
     return colors[category] || "bg-gray-100 text-gray-800";
   };
 
-  const EventCard = ({ event }) => (
+  //temporary define the event object.
+  const EventCard = ({ event }: { event: { id: number, title: string, date: string, time: string, location: string, category: string } }) => (
     <Card className="group hover:shadow-lg transition-all duration-300">
       <CardContent className="p-6">
         <div className="flex justify-between items-start mb-4">

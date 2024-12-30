@@ -51,20 +51,20 @@ type attendeesList = {
 };
 
 type events = {
-    eventID: string;
-    title: string;
-    description: string;
-    eventDate: string;
-    eventTime: string;
-    eventType: string;
-    category: string;
-    location: string;
-    organization: string;
-    maxParticipants: number;
-    status: string;
-    attendanceCode: string;
-    budget: number;
-};
+    eventID: string; // Unique identifier for the event
+    title: string; // Event title
+    shortDescription: string; // Brief description for the event
+    longDescription: string; // Detailed event description
+    eventDate: string; // Date of the event
+    eventTime: string; // Time of the event
+    eventLocation: string; // Location of the event 
+    eventType: string; // Type of event (e.g., virtual, in-person)
+    category: string; // Event category (e.g., technical, community, etc.)
+    maxParticipants: number; // Maximum number of participants allowed
+    organizer: string; // Organizer or organization hosting the event
+    attendancePassword: string; // Password for attendance verification
+    poster: string; // URL or path to the event poster (optional)
+  };
 
 export const USER_ROLES = ["Student", "Organization", ""] as const;
 
