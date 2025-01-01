@@ -1,6 +1,6 @@
 import { db } from '@/conf/firebase';
 import { auth } from '@/conf/firebase';
-import { collection, setDoc, doc , addDoc, getDocs, getDoc, query, where, updateDoc } from 'firebase/firestore';
+import { collection, setDoc, doc , addDoc, getDocs, getDoc, query, where, updateDoc, arrayUnion } from 'firebase/firestore';
 import fireauth  from '@/services/fireauth';
 
 export class Firestore {
@@ -180,25 +180,40 @@ export class Firestore {
         }
     }
 
-    //test add data to database
-    async addTestDataToDatabase() {
+    //get event by id
+    async getEventByID(eventID) {
         try {
-            await setDoc(doc(db, "users", "test"), {
-                email: "",
-                displayName: "test",
-            });
-            console.log("Data added to database!");
-        }
-        catch (error) {
+            const docRef = await getDoc(doc(db, "events", eventID));
+            if (docRef.exists()) {
+                console.log("Document data:", docRef.data());
+                return docRef.data();
+            } else {
+                console.log("No such document!");
+            }
+        } catch (error) {
             throw error;
         }
     }
 
-    //Create a new document
-    async createDocument(collection, data) {
+    //register event
+    async registeredEvents(eventID) {
         try {
-            const docRef = await db.collection(collection).add(data);
-            console.log("Document written with ID: ", docRef.id);
+            const user = auth.currentUser;
+            if (!user) {
+                throw new Error("No user is currently signed in.");
+            }
+            const queryRef = query(collection(db, "students"), where("userID", "==", user.uid));
+            const querySnapshot = await getDocs(queryRef);
+            if (!querySnapshot.empty) {
+                const docSnap = querySnapshot.docs[0];
+                const studentRef = doc(db, "students", docSnap.id);
+                await updateDoc(studentRef, {
+                    registeredEvents: arrayUnion(eventID)
+                });
+                console.log("Document successfully updated!");
+            } else {
+                console.log("No such document!");
+            }
         } catch (error) {
             throw error;
         }

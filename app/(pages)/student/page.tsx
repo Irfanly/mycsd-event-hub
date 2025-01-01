@@ -12,18 +12,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar, MapPin, Clock, Monitor } from "lucide-react";
+import { Calendar, MapPin, Clock, Monitor, ChevronRight } from "lucide-react";
 import { events, EVENT_CATEGORIES, EVENT_TYPES} from "@/lib/type/index";
+import { useRouter } from "next/navigation";
 import firestore from "@/services/firestore";
 
 const StudentPage = () => {
   const [events, setEvents] = useState<events[]>([]); // All events
-  const [filteredEvents, setFilteredEvents] = useState<events[]>([]); // Filtered ents
+  const [filteredEvents, setFilteredEvents] = useState<events[]>([]); // Filtered events
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const router = useRouter();
+  
+  const handleEventClick = (eventID: string) => {
+    router.push(`/student/event-details?id=${eventID}`);
+  };
 
   // Fetch events from Firebase
   useEffect(() => {
@@ -129,7 +136,11 @@ const StudentPage = () => {
           ) : (
             <div className="space-y-4">
               {filteredEvents.map((event) => (
-                <Card key={event.eventID} className="hover:bg-gray-50 transition-colors">
+                <Card 
+                  key={event.eventID} 
+                  className="hover:bg-gray-50 transition-colors cursor-pointer relative"
+                  onClick={() => handleEventClick(event.eventID)}
+                >
                   <CardContent className="p-6">
                     <div className="space-y-3">
                       {/* Organization Name */}
@@ -176,6 +187,11 @@ const StudentPage = () => {
                         <span className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700">
                           {event.category}
                         </span>
+                      </div>
+
+                      {/* View Details Icon */}
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                        <ChevronRight className="w-6 h-6 text-gray-400" />
                       </div>
                     </div>
                   </CardContent>
