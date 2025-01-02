@@ -69,137 +69,136 @@ const StudentPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Student - My App</title>
-      </Head>
-      <SideBar />
-      <div className="min-h-screen bg-gray-50 pt-20">
-        {/* Header */}
-        <div className="sticky top-0 bg-white border-b z-10">
-          <div className="max-w-3xl mx-auto px-4 py-3">
-            <h1 className="text-xl font-bold">Campus Events</h1>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <main className="max-w-3xl mx-auto px-4 py-4">
-          {/* Search and Filters */}
-          <div className="mb-6 space-y-4">
-            <Input
-              placeholder="Search events..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full"
-            />
-
-            <div className="flex gap-4">
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Event Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All Types</SelectItem>
-                  {EVENT_TYPES.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={selectedCategory}
-                onValueChange={setSelectedCategory}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All Categories</SelectItem>
-                  {EVENT_CATEGORIES.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+      <div className="flex h-screen">
+        <SideBar />
+        <div className="flex-1 overflow-auto bg-gray-50">
+          {/* Header */}
+          <div className="top-0 border-b z-[5]">
+            <div className="max-w-3xl mx-auto px-4 py-3">
+              <h1 className="text-xl font-bold">Campus Events</h1>
             </div>
           </div>
 
-          {/* Events Feed */}
-          {isLoading ? (
-            <div className="text-center text-gray-500">Loading events...</div>
-          ) : error ? (
-            <div className="text-center text-red-500">{error}</div>
-          ) : filteredEvents.length === 0 ? (
-            <div className="text-center text-gray-500">No events found.</div>
-          ) : (
-            <div className="space-y-4">
-              {filteredEvents.map((event) => (
-                <Card 
-                  key={event.eventID} 
-                  className="hover:bg-gray-50 transition-colors cursor-pointer relative"
-                  onClick={() => handleEventClick(event.eventID)}
+          {/* Main Content */}
+          <main className="max-w-3xl mx-auto px-4 py-4">
+            {/* Search and Filters */}
+            <div className="mb-6 space-y-4">
+              <Input
+                placeholder="Search events..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full"
+              />
+
+              <div className="flex gap-4">
+                <Select value={selectedType} onValueChange={setSelectedType}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Event Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Types</SelectItem>
+                    {EVENT_TYPES.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={selectedCategory}
+                  onValueChange={setSelectedCategory}
                 >
-                  <CardContent className="p-6">
-                    <div className="space-y-3">
-                      {/* Organization Name */}
-                      <div className="font-semibold text-gray-600">
-                        {event.organizer}
-                      </div>
-
-                      {/* Event Title */}
-                      <h2 className="text-xl font-bold">{event.title}</h2>
-
-                      {/* Event Details */}
-                      <div className="space-y-2 text-gray-600">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          <span>{new Date(event.eventDate).toLocaleDateString()}</span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          <span>{event.eventTime}</span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {event.eventType === "Online" ? (
-                            <Monitor className="w-4 h-4" />
-                          ) : (
-                            <MapPin className="w-4 h-4" />
-                          )}
-                          <span>{event.eventLocation}</span>
-                        </div>
-                      </div>
-
-                      {/* Event Type and Category Tags */}
-                      <div className="flex gap-2 pt-2">
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm ${
-                            event.eventType === "Online"
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-green-100 text-green-700"
-                          }`}
-                        >
-                          {event.eventType}
-                        </span>
-                        <span className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700">
-                          {event.category}
-                        </span>
-                      </div>
-
-                      {/* View Details Icon */}
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                        <ChevronRight className="w-6 h-6 text-gray-400" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Categories</SelectItem>
+                    {EVENT_CATEGORIES.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          )}
-        </main>
+
+            {/* Events Feed */}
+            {isLoading ? (
+              <div className="text-center text-gray-500">Loading events...</div>
+            ) : error ? (
+              <div className="text-center text-red-500">{error}</div>
+            ) : filteredEvents.length === 0 ? (
+              <div className="text-center text-gray-500">No events found.</div>
+            ) : (
+              <div className="space-y-4">
+                {filteredEvents.map((event) => (
+                  <Card 
+                    key={event.eventID} 
+                    className="hover:bg-gray-50 transition-colors cursor-pointer relative"
+                    onClick={() => handleEventClick(event.eventID)}
+                  >
+                    <CardContent className="p-6">
+                      <div className="space-y-3">
+                        {/* Organization Name */}
+                        <div className="font-semibold text-gray-600">
+                          {event.organizer}
+                        </div>
+
+                        {/* Event Title */}
+                        <h2 className="text-xl font-bold">{event.title}</h2>
+
+                        {/* Event Details */}
+                        <div className="space-y-2 text-gray-600">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            <span>{new Date(event.eventDate).toLocaleDateString()}</span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4" />
+                            <span>{event.eventTime}</span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {event.eventType === "Online" ? (
+                              <Monitor className="w-4 h-4" />
+                            ) : (
+                              <MapPin className="w-4 h-4" />
+                            )}
+                            <span>{event.eventLocation}</span>
+                          </div>
+                        </div>
+
+                        {/* Event Type and Category Tags */}
+                        <div className="flex gap-2 pt-2">
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm ${
+                              event.eventType === "Online"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-green-100 text-green-700"
+                            }`}
+                          >
+                            {event.eventType}
+                          </span>
+                          <span className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700">
+                            {event.category}
+                          </span>
+                        </div>
+
+                        {/* View Details Icon */}
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          <ChevronRight className="w-6 h-6 text-gray-400" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </main>
+        </div>
       </div>
     </>
   );

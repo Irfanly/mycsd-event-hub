@@ -88,7 +88,7 @@ const TaskManagementPage = () => {
     "Completed": <CheckCircle2 className="w-4 h-4" />,
   };
 
-  const handleDragEnd = (result) => {
+  const handleDragEnd = (result: { source: any; destination: any; }) => {
     const { source, destination } = result;
 
     if (!destination) return;
