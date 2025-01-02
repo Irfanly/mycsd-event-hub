@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import SideBar from "@/components/sideBar";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,14 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar, MapPin, Clock, Monitor, ChevronRight } from "lucide-react";
+import { Calendar, MapPin, Clock, Monitor, Search, Bell } from "lucide-react";
 import { events, EVENT_CATEGORIES, EVENT_TYPES} from "@/lib/type/index";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import firestore from "@/services/firestore";
 
 const StudentPage = () => {
-  const [events, setEvents] = useState<events[]>([]); // All events
-  const [filteredEvents, setFilteredEvents] = useState<events[]>([]); // Filtered events
+  const [events, setEvents] = useState<events[]>([]); 
+  const [filteredEvents, setFilteredEvents] = useState<events[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -32,13 +33,12 @@ const StudentPage = () => {
     router.push(`/student/event-details?id=${eventID}`);
   };
 
-  // Fetch events from Firebase
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const eventsData = await firestore.getEvents();
         setEvents(eventsData);
-        setFilteredEvents(eventsData); // Default to all events
+        setFilteredEvents(eventsData);
         setIsLoading(false);
       } catch (err) {
         setError("Failed to load events. Please try again.");
@@ -48,7 +48,6 @@ const StudentPage = () => {
     fetchEvents();
   }, []);
 
-  // Filter events based on search term, type, and category
   useEffect(() => {
     const filtered = events.filter((event) => {
       const matchesSearch =
@@ -68,111 +67,121 @@ const StudentPage = () => {
   }, [searchTerm, selectedType, selectedCategory, events]);
 
   return (
-    <>
-      <div className="flex h-screen">
-        <SideBar />
-        <div className="flex-1 overflow-auto bg-gray-50">
-          {/* Header */}
-          <div className="top-0 border-b z-[5]">
-            <div className="max-w-3xl mx-auto px-4 py-3">
-              <h1 className="text-xl font-bold">Campus Events</h1>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <main className="max-w-3xl mx-auto px-4 py-4">
-            {/* Search and Filters */}
-            <div className="mb-6 space-y-4">
-              <Input
-                placeholder="Search events..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full"
-              />
-
+    <div className="flex h-screen">
+      <SideBar />
+      <div className="flex-1 overflow-auto bg-gray-50">
+        {/* Header */}
+        <div className="bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold">Campus Events</h1>
               <div className="flex gap-4">
-                <Select value={selectedType} onValueChange={setSelectedType}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Event Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All">All Types</SelectItem>
-                    {EVENT_TYPES.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select
-                  value={selectedCategory}
-                  onValueChange={setSelectedCategory}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All">All Categories</SelectItem>
-                    {EVENT_CATEGORIES.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Button variant="outline" className="relative">
+                  <Bell className="w-4 h-4" />
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    2
+                  </span>
+                </Button>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Events Feed */}
-            {isLoading ? (
-              <div className="text-center text-gray-500">Loading events...</div>
-            ) : error ? (
-              <div className="text-center text-red-500">{error}</div>
-            ) : filteredEvents.length === 0 ? (
-              <div className="text-center text-gray-500">No events found.</div>
-            ) : (
+        <main className="max-w-7xl mx-auto px-4 py-6">       
+          {/* Search and Filters */}
+          <Card className="mb-6">
+            <CardContent className="p-6">
               <div className="space-y-4">
-                {filteredEvents.map((event) => (
-                  <Card 
-                    key={event.eventID} 
-                    className="hover:bg-gray-50 transition-colors cursor-pointer relative"
-                    onClick={() => handleEventClick(event.eventID)}
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search events..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                <div className="flex gap-4">
+                  <Select value={selectedType} onValueChange={setSelectedType}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Event Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="All">All Types</SelectItem>
+                      {EVENT_TYPES.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={selectedCategory}
+                    onValueChange={setSelectedCategory}
                   >
-                    <CardContent className="p-6">
-                      <div className="space-y-3">
-                        {/* Organization Name */}
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="All">All Categories</SelectItem>
+                      {EVENT_CATEGORIES.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Events Feed */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Available Events</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="text-center py-4">Loading events...</div>
+              ) : error ? (
+                <div className="text-center text-red-500">{error}</div>
+              ) : filteredEvents.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">No events found.</div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredEvents.map((event) => (
+                    <div
+                      key={event.eventID}
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                      onClick={() => handleEventClick(event.eventID)}
+                    >
+                      <div className="space-y-2">
                         <div className="font-semibold text-gray-600">
                           {event.organizer}
                         </div>
-
-                        {/* Event Title */}
-                        <h2 className="text-xl font-bold">{event.title}</h2>
-
-                        {/* Event Details */}
-                        <div className="space-y-2 text-gray-600">
-                          <div className="flex items-center gap-2">
+                        <h3 className="font-semibold">{event.title}</h3>
+                        <div className="flex gap-4 text-sm text-gray-600">
+                          <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            <span>{new Date(event.eventDate).toLocaleDateString()}</span>
+                            {new Date(event.eventDate).toLocaleDateString()}
                           </div>
-
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
                             <Clock className="w-4 h-4" />
-                            <span>{event.eventTime}</span>
+                            {event.eventTime}
                           </div>
-
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
                             {event.eventType === "Online" ? (
                               <Monitor className="w-4 h-4" />
                             ) : (
                               <MapPin className="w-4 h-4" />
                             )}
-                            <span>{event.eventLocation}</span>
+                            {event.eventLocation}
                           </div>
                         </div>
-
-                        {/* Event Type and Category Tags */}
-                        <div className="flex gap-2 pt-2">
+                        <div className="flex gap-2">
                           <span
                             className={`px-3 py-1 rounded-full text-sm ${
                               event.eventType === "Online"
@@ -186,21 +195,19 @@ const StudentPage = () => {
                             {event.category}
                           </span>
                         </div>
-
-                        {/* View Details Icon */}
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                          <ChevronRight className="w-6 h-6 text-gray-400" />
-                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </main>
-        </div>
+                      <Button variant="outline" size="sm">
+                        View Details
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </main>
       </div>
-    </>
+    </div>
   );
 };
 
