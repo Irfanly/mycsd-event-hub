@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import SideBar from "@/components/sideBar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,12 +21,13 @@ import firestore from "@/services/firestore";
 import { events } from "@/lib/type/index";
 
 const EventDetailsContent = () => {
+  const router = useRouter();
   const [event, setEvent] = useState<events | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-
+  
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
@@ -106,7 +107,7 @@ const EventDetailsContent = () => {
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gray-200">
                   <img 
-                    src="/api/placeholder/800/400" 
+                    src="https://t3.ftcdn.net/jpg/02/48/42/64/240_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" 
                     alt="Event placeholder" 
                     className="w-full h-full object-cover opacity-50"
                   />
@@ -193,9 +194,11 @@ const EventDetailsContent = () => {
 };
 
 const EventDetailsPage = () => {
-  <Suspense fallback={<div>Loading...</div>}>
-    <EventDetailsContent />
-  </Suspense>
+  return(
+    <Suspense fallback={<div>Loading...</div>}>
+      <EventDetailsContent />
+    </Suspense>
+  )
 }
 
 export default EventDetailsPage;
