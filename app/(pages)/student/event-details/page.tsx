@@ -21,6 +21,7 @@ import firestore from "@/services/firestore";
 import { events } from "@/lib/type/index";
 
 const EventDetailsContent = () => {
+  const router = useRouter();
   const [event, setEvent] = useState<events | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
