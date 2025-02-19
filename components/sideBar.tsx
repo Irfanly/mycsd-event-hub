@@ -60,7 +60,7 @@ const Sidebar = () => {
         <div className="mt-4 border-t pt-4 space-y-4">
           <div className="flex items-center">
             <img 
-              src="/api/placeholder/40/40" 
+              src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png" 
               alt="Profile" 
               className="w-10 h-10 rounded-full mr-3"
             />
