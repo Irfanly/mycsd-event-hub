@@ -21,6 +21,17 @@
 //   History
 // } from "lucide-react";
 
+const TaskManagementPage = () => {
+  //Simple dashboard
+  return (
+    <div className="bg-gray-50 p-8 min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900">Task Board</h1>
+      </div>
+    </div>
+  );
+};
+
 // const TaskManagementPage = () => {
 //   const [tasks, setTasks] = useState({
 //     "New": [
@@ -379,4 +390,4 @@
 //   );
 // };
 
-// export default TaskManagementPage;
+export default TaskManagementPage;
