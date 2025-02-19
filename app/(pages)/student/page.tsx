@@ -166,7 +166,7 @@ const StudentPage = () => {
                         <div className="flex gap-4 text-sm text-gray-600">
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            {new Date(event.eventDate).toLocaleDateString()}
+                            {event.eventDate}
                           </div>
                           <div className="flex items-center gap-1">
                             <Clock className="w-4 h-4" />
