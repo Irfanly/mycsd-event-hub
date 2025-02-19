@@ -92,7 +92,7 @@ const EventDetailsPage = () => {
   }
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={null}>
       <SideBar />
       <div className="min-h-screen bg-gray-50 pt-20">
         <main className="max-w-4xl mx-auto px-4 py-8">
