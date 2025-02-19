@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import SideBar from "@/components/sideBar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,7 @@ import {
 import firestore from "@/services/firestore";
 import { events } from "@/lib/type/index";
 
-const EventDetailsPage = () => {
-  const router = useRouter();
+const EventDetailsContent = () => {
   const [event, setEvent] = useState<events | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -35,7 +34,7 @@ const EventDetailsPage = () => {
     const fetchEventDetails = async () => {
       try {
         setIsLoading(true);
-        const eventData = await firestore.getEventByID(eventId as string);
+        const eventData = await firestore.getEventByID(id as string);
         setEvent(eventData as events);
         setIsLoading(false);
       } catch (err) {
@@ -44,14 +43,14 @@ const EventDetailsPage = () => {
       }
     };
 
-    if (eventId) {
+    if (id) {
       fetchEventDetails();
     }
-  }, [eventId]);
+  }, [id]);
 
   const handleRegister = async () => {
     try {
-      await firestore.registeredEvents(eventId as string);
+      await firestore.registeredEvents(id as string);
       setIsRegistered(true);
       setShowSuccessDialog(true);
     } catch (err) {
@@ -92,7 +91,7 @@ const EventDetailsPage = () => {
   }
 
   return (
-    <Suspense fallback={null}>
+    <>
       <SideBar />
       <div className="min-h-screen bg-gray-50 pt-20">
         <main className="max-w-4xl mx-auto px-4 py-8">
@@ -189,8 +188,14 @@ const EventDetailsPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Suspense>
+    </>
   );
 };
+
+const EventDetailsPage = () => {
+  <Suspense fallback={<div>Loading...</div>}>
+    <EventDetailsContent />
+  </Suspense>
+}
 
 export default EventDetailsPage;
