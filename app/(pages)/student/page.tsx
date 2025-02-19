@@ -30,7 +30,7 @@ const StudentPage = () => {
   const router = useRouter();
   
   const handleEventClick = (eventID: string) => {
-    router.push(`/student/event-details?id=${eventID}`);
+    router.push(`/student/event-details/${eventID}`);
   };
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import SideBar from "@/components/sideBar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,21 +21,18 @@ import firestore from "@/services/firestore";
 import { events } from "@/lib/type/index";
 
 const EventDetailsContent = () => {
-  const router = useRouter();
   const [event, setEvent] = useState<events | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
+  const { eventId } = useParams();
 
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
         setIsLoading(true);
-        const eventData = await firestore.getEventByID(id as string);
+        const eventData = await firestore.getEventByID(eventId as string);
         setEvent(eventData as events);
         setIsLoading(false);
       } catch (err) {
@@ -44,14 +41,14 @@ const EventDetailsContent = () => {
       }
     };
 
-    if (id) {
+    if (eventId) {
       fetchEventDetails();
     }
-  }, [id]);
+  }, [eventId]);
 
   const handleRegister = async () => {
     try {
-      await firestore.registeredEvents(id as string);
+      await firestore.registeredEvents(eventId as string);
       setIsRegistered(true);
       setShowSuccessDialog(true);
     } catch (err) {
