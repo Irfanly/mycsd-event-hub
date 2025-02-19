@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Phone, School, Calendar, MapPin, Clock, User, BookOpen, Building2, PenSquare, AlertCircle, Camera } from "lucide-react";
+import { Mail, Phone, School, Calendar, MapPin, Clock, User, BookOpen, Building2, PenSquare, AlertCircle, Camera, GraduationCap } from "lucide-react";
 import { users, students} from "@/lib/type/index";
 import firestore from "@/services/firestore";
 import firestorage from "@/services/firestorage";
@@ -153,20 +153,22 @@ const UserProfile = () => {
   );
 
   const ProfileField = ({ icon: Icon, label, value }: { icon: any, label: string, value: string | undefined }) => (
-    <div className="flex items-center gap-3">
-      <div className={`p-2 ${value ? 'bg-blue-100' : 'bg-gray-100'} rounded-lg`}>
-        <Icon className={`w-5 h-5 ${value ? 'text-blue-600' : 'text-gray-400'}`} />
-      </div>
-      <div className="flex-1">
-        <p className="text-sm text-gray-500">{label}</p>
-        {value ? (
-          <p className="font-medium">{value}</p>
-        ) : (
-          <div className="flex items-center gap-2 text-sm text-orange-500">
-            <AlertCircle className="w-4 h-4" />
-            <span>Please update your {label.toLowerCase()}</span>
-          </div>
-        )}
+    <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all">
+      <div className="flex items-center gap-3">
+        <div className={`p-3 ${value ? 'bg-blue-50' : 'bg-gray-50'} rounded-full`}>
+          <Icon className={`w-5 h-5 ${value ? 'text-blue-500' : 'text-gray-400'}`} />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-medium text-gray-500">{label}</p>
+          {value ? (
+            <p className="text-base font-semibold text-gray-800">{value}</p>
+          ) : (
+            <div className="flex items-center gap-2 text-sm text-orange-500">
+              <AlertCircle className="w-4 h-4" />
+              <span>Please update your {label.toLowerCase()}</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -187,121 +189,115 @@ const UserProfile = () => {
     <div className="min-h-screen bg-gray-50">
       <SideBar />
       <main className="p-8 lg:pl-72">
-        <div className="max-w-7xl mx-auto">
-          {/* Alert Banner */}
-          {(!userData?.name || !studentData?.programme || !userData?.profilePicture) && (
-            <div className="mb-4 flex items-center gap-2 text-orange-500 text-sm bg-orange-50 p-3 rounded-lg border border-orange-200">
-              <AlertCircle className="w-5 h-5" />
-              <span>Please complete your profile information</span>
-            </div>
-          )}
-
+        <div className="max-w-7xl mx-auto space-y-8">
           {/* Profile Header */}
-          <Card className="mb-8 relative">
+          <div className="relative rounded-xl bg-gradient-to-r from-blue-600 to-blue-400 p-8 text-white">
             <Button 
               variant="ghost" 
               size="icon"
-              className="absolute top-4 right-4 bg-white rounded-full shadow-md hover:bg-gray-100"
+              className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30"
               onClick={handleEditProfile}
             >
-              <PenSquare className="w-4 h-4 text-blue-600" />
+              <PenSquare className="w-4 h-4 text-white" />
             </Button>
             
-            <CardContent className="p-8">
-              <div className="flex flex-col md:flex-row gap-8 items-start">
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="relative">
-                    <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
-                      <AvatarImage src={userData?.profilePicture} />
-                      <AvatarFallback>{userData?.name?.charAt(0) || "U"}</AvatarFallback>
-                    </Avatar>
-                    <Input
-                      id="profile-picture-upload"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleUpdateProfilePicture}
-                    />
-                    <Label
-                      htmlFor="profile-picture-upload"
-                      className="absolute bottom-0 right-0 p-2 bg-blue-600 rounded-full cursor-pointer hover:bg-blue-700 transition-colors"
-                    >
-                      <Camera className="w-5 h-5 text-white" />
-                    </Label>
-                  </div>
-                  <div className="text-center">
-                    <h2 className="text-2xl font-bold text-gray-800">
-                      {userData?.name || "Update Your Name"}
-                    </h2>
-                    <p className="text-gray-600">
+            <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="relative">
+                  <Avatar className="w-32 h-32 border-4 border-white/50 shadow-xl">
+                    <AvatarImage src={userData?.profilePicture} />
+                    <AvatarFallback className="bg-blue-700">{userData?.name?.charAt(0) || "U"}</AvatarFallback>
+                  </Avatar>
+                  <Input
+                    id="profile-picture-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleUpdateProfilePicture}
+                  />
+                  <Label
+                    htmlFor="profile-picture-upload"
+                    className="absolute bottom-0 right-0 p-2 bg-white/20 backdrop-blur-sm rounded-full cursor-pointer hover:bg-white/30 transition-colors"
+                  >
+                    <Camera className="w-5 h-5 text-white" />
+                  </Label>
+                </div>
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold">
+                    {userData?.name || "Update Your Name"}
+                  </h2>
+                  <div className="flex items-center gap-2 mt-2 justify-center">
+                    <GraduationCap className="w-5 h-5" />
+                    <p className="text-white/90">
                       {studentData?.programme || "Update Your Programme"}
                     </p>
                   </div>
                 </div>
-
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-6">
-                    <ProfileField 
-                      icon={Mail} 
-                      label="Email" 
-                      value={userData?.email}
-                    />
-                    <ProfileField 
-                      icon={Phone} 
-                      label="Phone" 
-                      value={studentData?.phone}
-                    />
-                  </div>
-                  <div className="space-y-6">
-                    <ProfileField 
-                      icon={User} 
-                      label="Matric No." 
-                      value={studentData?.matricNo}
-                    />
-                    <ProfileField 
-                      icon={BookOpen} 
-                      label="Year" 
-                      value={studentData?.year ? `${studentData.year} Year` : undefined}
-                    />
-                  </div>
-                </div>
               </div>
-            </CardContent>
-          </Card>
+
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/10 backdrop-blur-sm p-6 rounded-xl">
+                <ProfileField 
+                  icon={Mail} 
+                  label="Email" 
+                  value={userData?.email}
+                />
+                <ProfileField 
+                  icon={Phone} 
+                  label="Phone" 
+                  value={studentData?.phone}
+                />
+                <ProfileField 
+                  icon={User} 
+                  label="Matric No." 
+                  value={studentData?.matricNo}
+                />
+                <ProfileField 
+                  icon={BookOpen} 
+                  label="Year" 
+                  value={studentData?.year ? `${studentData.year} Year` : undefined}
+                />
+              </div>
+            </div>
+          </div>
 
           {/* Events Section */}
-          <Tabs defaultValue="upcoming" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
-              <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-              <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
-              <TabsTrigger value="past">Past</TabsTrigger>
-            </TabsList>
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-6">
+              <Tabs defaultValue="upcoming" className="space-y-6">
+                <TabsList className="grid w-full grid-cols-3 lg:w-[400px] p-1 bg-gray-100">
+                  <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+                  <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
+                  <TabsTrigger value="past">Past</TabsTrigger>
+                </TabsList>
 
-            <TabsContent value="upcoming" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {upcomingEvents.map(event => (
-                  <EventCard key={event.id} event={event} />
-                ))}
-              </div>
-            </TabsContent>
+                <TabsContent value="upcoming" className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {upcomingEvents.map(event => (
+                      <EventCard key={event.id} event={event} />
+                    ))}
+                  </div>
+                </TabsContent>
 
-            <TabsContent value="ongoing">
-              <div className="text-center py-8">
-                <Building2 className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900">No Ongoing Events</h3>
-                <p className="text-gray-500 mt-2">Check back later for live events.</p>
-              </div>
-            </TabsContent>
+                <TabsContent value="ongoing">
+                  <div className="text-center py-12">
+                    <Building2 className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                    <h3 className="text-xl font-medium text-gray-900">No Ongoing Events</h3>
+                    <p className="text-gray-500 mt-2">Check back later for live events.</p>
+                  </div>
+                </TabsContent>
 
-            <TabsContent value="past" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {pastEvents.map(event => (
-                  <EventCard key={event.id} event={event} />
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+                <TabsContent value="past" className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {pastEvents.map(event => (
+                      <EventCard key={event.id} event={event} />
+                    ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
         </div>
+
         {userData && studentData && (
           <EditProfileModal
             isOpen={isEditModalOpen}
