@@ -20,14 +20,14 @@ import {
 import firestore from "@/services/firestore";
 import { events } from "@/lib/type/index";
 
-const EventDetailsPage = () => {
+const EventDetailsContent = () => {
   const router = useRouter();
   const [event, setEvent] = useState<events | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-
+  
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
@@ -92,7 +92,7 @@ const EventDetailsPage = () => {
   }
 
   return (
-    <Suspense fallback={null}>
+    <>
       <SideBar />
       <div className="min-h-screen bg-gray-50 pt-20">
         <main className="max-w-4xl mx-auto px-4 py-8">
@@ -189,8 +189,16 @@ const EventDetailsPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Suspense>
+    </>
   );
 };
+
+const EventDetailsPage = () => {
+  return(
+    <Suspense fallback={<div>Loading...</div>}>
+      <EventDetailsContent />
+    </Suspense>
+  )
+}
 
 export default EventDetailsPage;
