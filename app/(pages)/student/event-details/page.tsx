@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import SideBar from "@/components/sideBar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -92,7 +92,7 @@ const EventDetailsPage = () => {
   }
 
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <SideBar />
       <div className="min-h-screen bg-gray-50 pt-20">
         <main className="max-w-4xl mx-auto px-4 py-8">
@@ -189,7 +189,7 @@ const EventDetailsPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </Suspense>
   );
 };
 
