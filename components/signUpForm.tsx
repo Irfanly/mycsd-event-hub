@@ -39,7 +39,10 @@ export default function SignUpPage() {
         throw new Error("Invalid user role.");
       }
       if (await fireauth.isUserLoggedIn()) {
-        window.location.href = "/student";
+        if (role === "Student") 
+          window.location.href = "/student";
+        else if (role === "Organization") 
+          window.location.href = "/organization";
       } else {
         setError("Sign up failed. Please try again.");
       }

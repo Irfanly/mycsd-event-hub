@@ -7,8 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Mail } from "lucide-react";
+import { users } from "@/lib/type/index";
 import Link from "next/link";
 import fireauth from "@/services/fireauth";
+import firestore from "@/services/firestore";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -24,7 +26,12 @@ export default function SignInPage() {
     try {
       await fireauth.signIn(email, password);
       if (await fireauth.isUserLoggedIn()) {
-        window.location.href = "/student";
+        //check if user is student or organization
+        const user = await firestore.readUserDatabase() as users;
+        if (user.role === "student") 
+          window.location.href = "/student";
+        else 
+          window.location.href = "/organization";
       } else {
         setError("Sign in failed. Please try again.");
       }

@@ -3,7 +3,6 @@
 import React from 'react';
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import SideBar from "@/components/sideBar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,8 +30,10 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import firestore from "@/services/firestore";
+import fireauth from '@/services/fireauth';
+import { auth } from "@/conf/firebase";
 import { events } from "@/lib/type/index";
-import Sidebar from '@/components/sideBar';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const OrganizationDashboard = () => {
   const [upcomingEvents, setUpcomingEvents] = useState<events[]>([]);
@@ -45,23 +46,29 @@ const OrganizationDashboard = () => {
 
   // Fetch organization's events
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const eventsData = await firestore.getEvents();
-        // Filter for current organization's events and split into upcoming/past
-        const now = new Date();
-        const upcoming = eventsData.filter(event => new Date(event.eventDate) > now);
-        const past = eventsData.filter(event => new Date(event.eventDate) <= now);
-        setUpcomingEvents(upcoming);
-        setPastEvents(past);
-        setFilteredPastEvents(past);
-        setIsLoading(false);
-      } catch (err) {
-        console.error("Failed to fetch events:", err);
-        setIsLoading(false);
+
+    // Wait for authentication state before fetching events
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const eventsData = await firestore.getEventsByUserID(); // Pass UID to avoid "No user is currently signed in" error
+          const now = new Date();
+          const upcoming = eventsData.filter(event => new Date(event.eventDate) > now);
+          const past = eventsData.filter(event => new Date(event.eventDate) <= now);
+
+          setUpcomingEvents(upcoming);
+          setPastEvents(past);
+          setFilteredPastEvents(past);
+        } catch (err) {
+          console.error("Failed to fetch events:", err);
+        }
+      } else {
+        console.error("No user signed in.");
       }
-    };
-    fetchEvents();
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe(); // Cleanup listener when component unmounts
   }, []);
 
   // Filter and sort past events
@@ -159,8 +166,6 @@ const OrganizationDashboard = () => {
 
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
-      <Sidebar />
       {/* Main Content */}
       <div className="flex-1 overflow-auto  bg-gray-50">
         {/* Header */}
@@ -170,7 +175,7 @@ const OrganizationDashboard = () => {
               <h1 className="text-2xl font-bold">Organization Dashboard</h1>
               <div className="flex gap-4">
                 <Button
-                  onClick={() => router.push('/organization/create-event')}
+                  onClick={() => router.push('/organization/create')}
                   className="flex items-center gap-2"
                 >
                   <PlusCircle className="w-4 h-4" />
@@ -323,7 +328,7 @@ const OrganizationDashboard = () => {
                 <Button
                   variant="outline"
                   className="h-24 flex flex-col items-center justify-center gap-2"
-                  onClick={() => router.push('/organization/create-event')}
+                  onClick={() => router.push('/organization/create')}
                 >
                   <PlusCircle className="w-6 h-6" />
                   Create New Event

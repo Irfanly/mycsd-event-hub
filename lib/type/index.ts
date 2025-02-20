@@ -52,6 +52,8 @@ type attendeesList = {
 
 type events = {
     eventID: string; // Unique identifier for the event
+    organizerID?: string; // ID of the user or organization hosting the event
+    status?: string; // Status of the event (e.g., upcoming, ongoing, completed)
     title: string; // Event title
     shortDescription: string; // Brief description for the event
     longDescription: string; // Detailed event description

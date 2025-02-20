@@ -292,6 +292,25 @@ export class Firestore {
             throw error;
         }
     }
+
+    //Read event based on user ID
+    async getEventsByUserID() {
+        //read curent user
+        const user = auth.currentUser;
+        console.log(user);
+        if (!user) {
+            throw new Error("No user is currently signed in.");
+        }
+        const querySnapshot = await getDocs(query(collection(db, "events"), where("organizerID", "==", user.uid)));
+        const events = [];
+        querySnapshot.forEach((doc) => {
+            events.push({
+                eventID: doc.id,
+                ...doc.data()
+            });
+        });
+        return events;
+    }
 }
 
 const firestore = new Firestore();
