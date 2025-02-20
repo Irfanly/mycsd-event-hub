@@ -41,13 +41,15 @@ type teamMembers = {
 type registeredParticipants = {
     eventID: string;
     studentID: string;
-    registrationDate: string;
+    name: string;
+    email: string;
 };
 
 type attendeesList = {
     eventID: string;
     studentID: string;
-    attendanceDate: string;
+    name: string;
+    email: string;
 };
 
 type events = {

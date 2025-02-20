@@ -17,7 +17,7 @@ const EventCreationPage = () => {
     longDescription: "",
     eventDate: "",
     eventTime: "",
-    location: "",
+    eventLocation: "",
     eventType: "",
     category: "",
     maxParticipants: "",
@@ -105,7 +105,7 @@ const EventCreationPage = () => {
                       {[
                         { icon: Calendar, label: "Date", name: "eventDate", type: "date" },
                         { icon: Clock, label: "Time", name: "eventTime", type: "time" },
-                        { icon: MapPin, label: "Location", name: "location", type: "text" },
+                        { icon: MapPin, label: "Location", name: "eventLocation", type: "text" },
                         { icon: Tag, label: "Event Type", name: "eventType", type: "select", options: EVENT_TYPES },
                         { icon: Bookmark, label: "Category", name: "category", type: "select", options: EVENT_CATEGORIES },
                         { icon: Users, label: "Max Participants", name: "maxParticipants", type: "number" },

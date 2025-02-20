@@ -30,7 +30,6 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import firestore from "@/services/firestore";
-import fireauth from '@/services/fireauth';
 import { auth } from "@/conf/firebase";
 import { events } from "@/lib/type/index";
 import { onAuthStateChanged } from 'firebase/auth';
@@ -156,7 +155,7 @@ const OrganizationDashboard = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => router.push(`/organization/event-details?id=${event.eventID}`)}
+          onClick={() => router.push(`/organization/details/${event.eventID}`)}
         >
           View Details
         </Button>

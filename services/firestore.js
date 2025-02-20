@@ -313,19 +313,19 @@ export class Firestore {
         return events;
     }
 
-    //Create participants list
-    async createParticipantsList(eventID) {
-        try {
-            const docRef = await addDoc(collection(db, "participants"), {
-                eventID: eventID,
-                studentID: []
-            });
-            console.log("Participants list created with ID: ", docRef.id);
-            return docRef;
-        } catch (error) {
-            throw error;
-        }
-    }
+    //Create participants list (not needed)
+    // async createParticipantsList(eventID) {
+    //     try {
+    //         const docRef = await addDoc(collection(db, "participants"), {
+    //             eventID: eventID,
+    //             studentID: []
+    //         });
+    //         console.log("Participants list created with ID: ", docRef.id);
+    //         return docRef;
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
 
 
     //Create new Events
@@ -342,13 +342,14 @@ export class Firestore {
                 title: data.title,
                 shortDescription: data.shortDescription,
                 longDescription: data.longDescription,
-                location: data.location,
+                eventLocation: data.eventLocation,
                 eventDate: data.eventDate,
                 eventTime: data.eventTime,
                 eventType: data.eventType,
                 category: data.category,
                 organizer: organizer.name,
                 maxParticipants: data.maxParticipants,
+                attendancePassword: data.attendancePassword,
                 poster: "",
                 status: "Upcoming"
             };
@@ -357,14 +358,59 @@ export class Firestore {
             const docRef = await addDoc(collection(db, "events"), event);
             console.log("Document written with ID: ", docRef.id);
 
-            //Create empty participants list
-            await firestore.createParticipantsList(docRef.id);
-
             // Upload the event poster if provided
             if (file) {
                 const posterURL = await firestorage.uploadEventPicture(file, docRef.id);
                 await updateDoc(doc(db, "events", docRef.id), { poster: posterURL });
                 console.log("Event poster updated!");
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    //Show event details for oragnizer's view (duplicate of getEventByID)
+    // async showEventDetails(eventID) {
+    //     try {
+    //         //Get event data
+    //         const docRef = await getDoc(doc(db, "events", eventID));
+    //         if (docRef.exists()) {
+    //             console.log("Document data:", docRef.data());
+    //             return docRef.data();
+    //         } else {
+    //             console.log("No such document!");
+    //         }
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
+
+    //Get participants list
+    async getParticipantsList(eventID) {
+        try {
+            const querySnapshot = await getDocs(query(collection(db, "participants"), where("eventID", "==", eventID)));
+            if (!querySnapshot.empty) {
+                const docSnap = querySnapshot.docs[0];
+                console.log("Document data:", docSnap.data());
+                return docSnap.data();
+            } else {
+                console.log("No such document!");
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    //Get attandance list for the event
+    async getAttendanceList(eventID) {
+        try {
+            const querySnapshot = await getDocs(query(collection(db, "participants"), where("eventID", "==", eventID)));
+            if (!querySnapshot.empty) {
+                const docSnap = querySnapshot.docs[0];
+                console.log("Document data:", docSnap.data());
+                return docSnap.data();
+            } else {
+                console.log("No such document!");
             }
         } catch (error) {
             throw error;
