@@ -2,6 +2,7 @@ import { db } from '@/conf/firebase';
 import { auth } from '@/conf/firebase';
 import { collection, setDoc, doc , addDoc, getDocs, getDoc, query, where, updateDoc, arrayUnion } from 'firebase/firestore';
 import fireauth  from '@/services/fireauth';
+import firestorage from '@/services/firestorage';
 
 export class Firestore {
 
@@ -310,6 +311,64 @@ export class Firestore {
             });
         });
         return events;
+    }
+
+    //Create participants list
+    async createParticipantsList(eventID) {
+        try {
+            const docRef = await addDoc(collection(db, "participants"), {
+                eventID: eventID,
+                studentID: []
+            });
+            console.log("Participants list created with ID: ", docRef.id);
+            return docRef;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
+    //Create new Events
+    async createEvent(data, file) {
+        try {
+            const user = auth.currentUser;
+            if (!user) {
+                throw new Error("No user is currently signed in.");
+            }
+            const organizer = await firestore.readUserDatabase();
+
+            const event = {
+                organizerID: user.uid,
+                title: data.title,
+                shortDescription: data.shortDescription,
+                longDescription: data.longDescription,
+                location: data.location,
+                eventDate: data.eventDate,
+                eventTime: data.eventTime,
+                eventType: data.eventType,
+                category: data.category,
+                organizer: organizer.name,
+                maxParticipants: data.maxParticipants,
+                poster: "",
+                status: "Upcoming"
+            };
+
+            console.log(event);
+            const docRef = await addDoc(collection(db, "events"), event);
+            console.log("Document written with ID: ", docRef.id);
+
+            //Create empty participants list
+            await firestore.createParticipantsList(docRef.id);
+
+            // Upload the event poster if provided
+            if (file) {
+                const posterURL = await firestorage.uploadEventPicture(file, docRef.id);
+                await updateDoc(doc(db, "events", docRef.id), { poster: posterURL });
+                console.log("Event poster updated!");
+            }
+        } catch (error) {
+            throw error;
+        }
     }
 }
 

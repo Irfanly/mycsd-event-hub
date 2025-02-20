@@ -23,7 +23,7 @@ export class Firestorage{
     async uploadEventPicture(file, eventID) {
         try {
             const pictureRef = ref(storage, `event-pictures/${eventID}`);
-            uploadBytes(pictureRef, file);
+            await uploadBytes(pictureRef, file);
             //get download url
             const downloadURL = await getDownloadURL(pictureRef);
             console.log("Profile picture uploaded! with url:", downloadURL);
